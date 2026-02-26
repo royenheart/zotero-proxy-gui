@@ -1,0 +1,210 @@
+/* preferences.css — Zotero Proxy GUI preference pane styles */
+
+/* ── Layout ── */
+.proxy-pane {
+  font-family: inherit;
+  padding: 12px 16px;
+}
+
+/* ── Status bar ── */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  border-radius: 6px;
+  background: var(--material-sidepanel, #f4f4f4);
+  border: 1px solid var(--material-border, #d0d0d0);
+}
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #aaa;
+  flex-shrink: 0;
+}
+.status-dot.active {
+  background: #2ecc71;
+}
+.status-label {
+  font-size: 0.95em;
+  flex: 1;
+}
+
+/* ── Config list ── */
+.config-list-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.config-list-header h3 {
+  margin: 0;
+  font-size: 1em;
+  flex: 1;
+}
+.config-list {
+  border: 1px solid var(--material-border, #d0d0d0);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  min-height: 120px;
+}
+.config-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 8px;
+  border-bottom: 1px solid var(--material-border, #e8e8e8);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.config-item:last-child {
+  border-bottom: none;
+}
+.config-item:hover {
+  background: var(--material-button-active, #e8e8e8);
+}
+.config-item.active-config {
+  background: var(--accent-blue10, #e8f0fe);
+}
+.config-item.selected-config {
+  outline: 2px solid var(--accent-blue, #2756d6);
+  outline-offset: -2px;
+}
+.config-item-name {
+  flex: 1;
+  font-weight: 500;
+}
+.config-item-meta {
+  font-size: 0.85em;
+  color: #888;
+}
+.config-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  color: #aaa;
+  font-size: 0.9em;
+}
+
+/* ── Buttons ── */
+.btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+button {
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--material-border, #ccc);
+  background: var(--material-button, #f0f0f0);
+  cursor: pointer;
+  font-size: 0.9em;
+}
+button:hover {
+  background: var(--material-button-active, #e0e0e0);
+}
+button.primary {
+  background: var(--accent-blue, #2756d6);
+  color: #fff;
+  border-color: transparent;
+}
+button.primary:hover {
+  background: #1e47b8;
+}
+button.danger {
+  color: #c0392b;
+  border-color: #e0a0a0;
+}
+button.danger:hover {
+  background: #fdecea;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Dialog overlay ── */
+.dialog-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.dialog-backdrop.open {
+  display: flex;
+}
+.dialog-box {
+  background: var(--material-sidepanel, #fff);
+  border-radius: 8px;
+  padding: 20px 24px;
+  width: 360px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+.dialog-box h3 {
+  margin: 0 0 16px;
+  font-size: 1.05em;
+}
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.field-row label {
+  font-size: 0.875em;
+  font-weight: 500;
+}
+.field-row input,
+.field-row select {
+  padding: 5px 8px;
+  border: 1px solid var(--material-border, #ccc);
+  border-radius: 4px;
+  font-size: 0.9em;
+  background: var(--material-input, #fff);
+  color: inherit;
+}
+.field-row input:focus,
+.field-row select:focus {
+  outline: 2px solid var(--accent-blue, #2756d6);
+  outline-offset: 1px;
+}
+.field-group {
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  gap: 8px;
+}
+.ssl-section,
+.socks-section {
+  display: none;
+}
+.ssl-section.visible,
+.socks-section.visible {
+  display: block;
+}
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+.error-msg {
+  color: #c0392b;
+  font-size: 0.85em;
+  margin-bottom: 10px;
+  display: none;
+}
+.error-msg.visible {
+  display: block;
+}

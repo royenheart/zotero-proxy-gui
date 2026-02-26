@@ -4,6 +4,10 @@
  * Reads and writes Zotero's network.proxy.* preferences to activate,
  * switch, and disable proxy configurations.
  *
+ * IMPORTANT: Zotero.Prefs.set/get prepend "extensions.zotero." by default.
+ * To write to the *real* Firefox network.proxy.* prefs, the third argument
+ * `global` must be `true`.
+ *
  * Proxy type values used by Firefox/Zotero:
  *   0 = Direct (no proxy)
  *   1 = Manual configuration
@@ -34,31 +38,33 @@ export const ProxyManager = {
     }
 
     if (config.type === "http") {
-      Zotero.Prefs.set("network.proxy.type", 1);
-      Zotero.Prefs.set("network.proxy.http", config.host);
-      Zotero.Prefs.set("network.proxy.http_port", config.port);
+      Zotero.Prefs.set("network.proxy.type", 1, true);
+      Zotero.Prefs.set("network.proxy.http", config.host, true);
+      Zotero.Prefs.set("network.proxy.http_port", config.port, true);
       // SSL/HTTPS traffic
       const sslHost = config.sslHost ?? config.host;
       const sslPort = config.sslPort ?? config.port;
-      Zotero.Prefs.set("network.proxy.ssl", sslHost);
-      Zotero.Prefs.set("network.proxy.ssl_port", sslPort);
+      Zotero.Prefs.set("network.proxy.ssl", sslHost, true);
+      Zotero.Prefs.set("network.proxy.ssl_port", sslPort, true);
       // Clear SOCKS fields
-      Zotero.Prefs.set("network.proxy.socks", "");
-      Zotero.Prefs.set("network.proxy.socks_port", 0);
+      Zotero.Prefs.set("network.proxy.socks", "", true);
+      Zotero.Prefs.set("network.proxy.socks_port", 0, true);
+      Zotero.Prefs.set("network.proxy.socks_remote_dns", false, true);
     } else if (config.type === "socks5") {
-      Zotero.Prefs.set("network.proxy.type", 1);
-      Zotero.Prefs.set("network.proxy.socks", config.host);
-      Zotero.Prefs.set("network.proxy.socks_port", config.port);
-      Zotero.Prefs.set("network.proxy.socks_version", 5);
+      Zotero.Prefs.set("network.proxy.type", 1, true);
+      Zotero.Prefs.set("network.proxy.socks", config.host, true);
+      Zotero.Prefs.set("network.proxy.socks_port", config.port, true);
+      Zotero.Prefs.set("network.proxy.socks_version", 5, true);
       Zotero.Prefs.set(
         "network.proxy.socks_remote_dns",
         config.remoteDns !== false, // default true
+        true,
       );
       // Clear HTTP fields
-      Zotero.Prefs.set("network.proxy.http", "");
-      Zotero.Prefs.set("network.proxy.http_port", 0);
-      Zotero.Prefs.set("network.proxy.ssl", "");
-      Zotero.Prefs.set("network.proxy.ssl_port", 0);
+      Zotero.Prefs.set("network.proxy.http", "", true);
+      Zotero.Prefs.set("network.proxy.http_port", 0, true);
+      Zotero.Prefs.set("network.proxy.ssl", "", true);
+      Zotero.Prefs.set("network.proxy.ssl_port", 0, true);
     }
 
     Zotero.log(
@@ -68,7 +74,7 @@ export const ProxyManager = {
 
   /** Disable proxy (set type to 0 = Direct) */
   disable(): void {
-    Zotero.Prefs.set("network.proxy.type", 0);
+    Zotero.Prefs.set("network.proxy.type", 0, true);
     Zotero.log("[zotero-proxy-gui] Proxy disabled");
   },
 
@@ -92,7 +98,7 @@ export const ProxyManager = {
   /** Read current status from ConfigStore + live Zotero prefs */
   getStatus(): ProxyStatus {
     const config = ConfigStore.getActive();
-    const liveType = Zotero.Prefs.get("network.proxy.type") as number;
+    const liveType = Zotero.Prefs.get("network.proxy.type", true) as number;
     const active = liveType !== 0 && config !== null;
 
     let label: string;

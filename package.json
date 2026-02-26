@@ -1,7 +1,7 @@
 {
   "name": "zotero-proxy-gui",
   "version": "0.1.0",
-  "description": "A Zotero 7 plugin providing a visual proxy management interface with multi-config presets and one-click switching",
+  "description": "A Zotero 7/8 plugin providing a visual proxy management interface with multi-config presets and one-click switching",
   "private": true,
   "config": {
     "prefsPrefix": "extensions.zotero-proxy-gui"
@@ -12,7 +12,9 @@
   },
   "scripts": {
     "start": "zotero-plugin serve",
-    "build": "zotero-plugin build",
+    "build": "node scripts/build-multi.mjs",
+    "build:v7": "node scripts/build-multi.mjs v7",
+    "build:v8": "node scripts/build-multi.mjs v8",
     "release": "zotero-plugin release",
     "lint": "eslint src --ext .ts",
     "typecheck": "tsc --noEmit"

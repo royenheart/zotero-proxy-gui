@@ -27,6 +27,14 @@ function select(id: string): HTMLSelectElement {
   return (_doc as Document).getElementById(id) as HTMLSelectElement;
 }
 
+const XHTML_NS = "http://www.w3.org/1999/xhtml";
+
+function htmlEl<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+): HTMLElementTagNameMap[K] {
+  return (_doc as Document).createElementNS(XHTML_NS, tag) as HTMLElementTagNameMap[K];
+}
+
 function typeLabel(type: ProxyConfig["type"]): string {
   return type === "http" ? "HTTP" : type === "socks5" ? "SOCKS5" : "None";
 }
@@ -67,23 +75,23 @@ function renderList(): void {
   empty.style.display = "none";
 
   for (const cfg of configs) {
-    const item = (_doc as Document).createElement("div");
+    const item = htmlEl("div");
     item.className = "config-item";
     if (cfg.id === activeId) item.classList.add("active-config");
     if (cfg.id === _selectedId) item.classList.add("selected-config");
 
-    const name = (_doc as Document).createElement("span");
+    const name = htmlEl("span");
     name.className = "config-item-name";
     name.textContent = cfg.name;
 
-    const meta = (_doc as Document).createElement("span");
+    const meta = htmlEl("span");
     meta.className = "config-item-meta";
     meta.textContent =
       cfg.type === "none"
         ? "No proxy"
         : `${typeLabel(cfg.type)} ${cfg.host}:${cfg.port}`;
 
-    const activeTag = (_doc as Document).createElement("span");
+    const activeTag = htmlEl("span");
     if (cfg.id === activeId) {
       activeTag.style.cssText =
         "font-size:0.75em;background:#2ecc71;color:#fff;padding:1px 6px;border-radius:10px;";
@@ -226,7 +234,7 @@ function saveDialog(): void {
 
 export const PreferencePane = {
   /**
-   * Called from preferences.xhtml after DOMContentLoaded.
+   * Called once when the pane fragment is first inserted into the document.
    * Wires up all event listeners and renders the initial state.
    */
   init(doc: Document): void {
@@ -276,5 +284,15 @@ export const PreferencePane = {
       if (e.target === $("dialog-backdrop")) closeDialog();
     });
     select("field-type").addEventListener("change", onTypeChange);
+  },
+
+  /**
+   * Called every time the pane becomes visible again (after the initial init).
+   * Refreshes dynamic UI (status bar, config list) without re-binding events.
+   */
+  refresh(): void {
+    if (!_doc) return;
+    renderList();
+    updateStatus();
   },
 };

@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  typecheck-and-build:
+    name: Type Check & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build (v7)
+        run: npm run build:v7
+
+      - name: Build (v8)
+        run: npm run build:v8
+
+      - name: Upload build artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: xpi-${{ github.sha }}
+          path: |
+            build/v7/zotero-proxy-gui-v7.xpi
+            build/v8/zotero-proxy-gui-v8.xpi
+          retention-days: 7

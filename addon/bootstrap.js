@@ -28,7 +28,8 @@ function shutdown({ id, version, rootURI }, reason) {
     chromeHandle = undefined;
   }
 
-  Cu.unload(rootURI + "content/index.js");
+  // Cu.unload() was removed in newer Firefox/Zotero 8; loadSubScript does not
+  // use the Cu module cache, so no explicit unload is needed.
 }
 
 function install(data, reason) {
