@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- preferences.xhtml — Zotero Proxy GUI preference pane -->
+<!DOCTYPE html>
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+>
+  <head>
+    <title>Proxy GUI</title>
+    <link rel="localization" href="zotero-proxy-gui-preferences.ftl" />
+    <style>
+      /* ── Layout ── */
+      .proxy-pane {
+        font-family: inherit;
+        padding: 12px 16px;
+      }
+
+      /* ── Status bar ── */
+      .status-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        margin-bottom: 14px;
+        border-radius: 6px;
+        background: var(--material-sidepanel, #f4f4f4);
+        border: 1px solid var(--material-border, #d0d0d0);
+      }
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #aaa;
+        flex-shrink: 0;
+      }
+      .status-dot.active {
+        background: #2ecc71;
+      }
+      .status-label {
+        font-size: 0.95em;
+        flex: 1;
+      }
+
+      /* ── Config list ── */
+      .config-list-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .config-list-header h3 {
+        margin: 0;
+        font-size: 1em;
+        flex: 1;
+      }
+      .config-list {
+        border: 1px solid var(--material-border, #d0d0d0);
+        border-radius: 6px;
+        overflow: hidden;
+        margin-bottom: 12px;
+        min-height: 120px;
+      }
+      .config-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        gap: 8px;
+        border-bottom: 1px solid var(--material-border, #e8e8e8);
+        cursor: pointer;
+        transition: background 0.1s;
+      }
+      .config-item:last-child {
+        border-bottom: none;
+      }
+      .config-item:hover {
+        background: var(--material-button-active, #e8e8e8);
+      }
+      .config-item.active-config {
+        background: var(--accent-blue10, #e8f0fe);
+      }
+      .config-item-name {
+        flex: 1;
+        font-weight: 500;
+      }
+      .config-item-meta {
+        font-size: 0.85em;
+        color: #888;
+      }
+      .config-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 80px;
+        color: #aaa;
+        font-size: 0.9em;
+      }
+
+      /* ── Buttons ── */
+      .btn-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 5px 12px;
+        border-radius: 4px;
+        border: 1px solid var(--material-border, #ccc);
+        background: var(--material-button, #f0f0f0);
+        cursor: pointer;
+        font-size: 0.9em;
+      }
+      button:hover {
+        background: var(--material-button-active, #e0e0e0);
+      }
+      button.primary {
+        background: var(--accent-blue, #2756d6);
+        color: #fff;
+        border-color: transparent;
+      }
+      button.primary:hover {
+        background: #1e47b8;
+      }
+      button.danger {
+        color: #c0392b;
+        border-color: #e0a0a0;
+      }
+      button.danger:hover {
+        background: #fdecea;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+
+      /* ── Dialog overlay ── */
+      .dialog-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+      .dialog-backdrop.open {
+        display: flex;
+      }
+      .dialog-box {
+        background: var(--material-sidepanel, #fff);
+        border-radius: 8px;
+        padding: 20px 24px;
+        width: 360px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+      }
+      .dialog-box h3 {
+        margin: 0 0 16px;
+        font-size: 1.05em;
+      }
+      .field-row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 12px;
+      }
+      .field-row label {
+        font-size: 0.875em;
+        font-weight: 500;
+      }
+      .field-row input,
+      .field-row select {
+        padding: 5px 8px;
+        border: 1px solid var(--material-border, #ccc);
+        border-radius: 4px;
+        font-size: 0.9em;
+        background: var(--material-input, #fff);
+        color: inherit;
+      }
+      .field-row input:focus,
+      .field-row select:focus {
+        outline: 2px solid var(--accent-blue, #2756d6);
+        outline-offset: 1px;
+      }
+      .field-group {
+        display: grid;
+        grid-template-columns: 1fr 100px;
+        gap: 8px;
+      }
+      .ssl-section,
+      .socks-section {
+        display: none;
+      }
+      .ssl-section.visible,
+      .socks-section.visible {
+        display: block;
+      }
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .error-msg {
+        color: #c0392b;
+        font-size: 0.85em;
+        margin-bottom: 10px;
+        display: none;
+      }
+      .error-msg.visible {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="proxy-pane">
+
+      <!-- ── Current Status ── -->
+      <div class="status-bar" id="status-bar">
+        <div class="status-dot" id="status-dot"></div>
+        <span class="status-label" id="status-label" data-l10n-id="proxy-status-none"></span>
+      </div>
+
+      <!-- ── Configuration List ── -->
+      <div class="config-list-header">
+        <h3 data-l10n-id="proxy-configs-title"></h3>
+      </div>
+      <div class="config-list" id="config-list">
+        <div class="config-empty" id="config-empty" data-l10n-id="proxy-configs-empty"></div>
+      </div>
+
+      <!-- ── Action Buttons ── -->
+      <div class="btn-row">
+        <button class="primary" id="btn-add" data-l10n-id="proxy-btn-add"></button>
+        <button id="btn-edit" disabled data-l10n-id="proxy-btn-edit"></button>
+        <button class="danger" id="btn-delete" disabled data-l10n-id="proxy-btn-delete"></button>
+        <button id="btn-activate" disabled data-l10n-id="proxy-btn-activate"></button>
+        <button id="btn-disable" data-l10n-id="proxy-btn-disable"></button>
+      </div>
+
+    </div>
+
+    <!-- ── Add/Edit Dialog ── -->
+    <div class="dialog-backdrop" id="dialog-backdrop">
+      <div class="dialog-box">
+        <h3 id="dialog-title" data-l10n-id="proxy-dialog-add-title"></h3>
+
+        <div class="error-msg" id="dialog-error"></div>
+
+        <div class="field-row">
+          <label for="field-name" data-l10n-id="proxy-field-name"></label>
+          <input type="text" id="field-name" />
+        </div>
+
+        <div class="field-row">
+          <label for="field-type" data-l10n-id="proxy-field-type"></label>
+          <select id="field-type">
+            <option value="http" data-l10n-id="proxy-type-http"></option>
+            <option value="socks5" data-l10n-id="proxy-type-socks5"></option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label data-l10n-id="proxy-field-host-port"></label>
+          <div class="field-group">
+            <input type="text" id="field-host" placeholder="192.168.1.100" />
+            <input type="number" id="field-port" placeholder="7890" min="1" max="65535" />
+          </div>
+        </div>
+
+        <!-- HTTP: SSL/HTTPS fields -->
+        <div class="ssl-section" id="ssl-section">
+          <div class="field-row">
+            <label data-l10n-id="proxy-field-ssl-host-port"></label>
+            <div class="field-group">
+              <input type="text" id="field-ssl-host" placeholder="192.168.1.100" />
+              <input type="number" id="field-ssl-port" placeholder="7890" min="1" max="65535" />
+            </div>
+          </div>
+        </div>
+
+        <!-- SOCKS5: remote DNS option -->
+        <div class="socks-section" id="socks-section">
+          <div class="checkbox-row">
+            <input type="checkbox" id="field-remote-dns" checked />
+            <label for="field-remote-dns" data-l10n-id="proxy-field-remote-dns"></label>
+          </div>
+        </div>
+
+        <div class="dialog-actions">
+          <button id="dialog-cancel" data-l10n-id="proxy-btn-cancel"></button>
+          <button class="primary" id="dialog-save" data-l10n-id="proxy-btn-save"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load the compiled plugin script -->
+    <script src="index.js"></script>
+    <script>
+      // Initialise the preferences UI once the DOM is ready
+      document.addEventListener("DOMContentLoaded", () => {
+        zoteroproxygui.preferencePane.init(document);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "Zotero Proxy GUI",
+  "version": "0.1.0",
+  "description": "Visual proxy management for Zotero 7 with multi-config presets and one-click switching",
+  "author": "royenheart",
+  "homepage_url": "https://github.com/royenheart/zotero-proxy-gui",
+  "icons": {
+    "48": "content/icons/favicon.png",
+    "96": "content/icons/favicon@2x.png"
+  },
+  "applications": {
+    "zotero": {
+      "id": "zotero-proxy-gui@royenheart",
+      "update_url": "https://raw.githubusercontent.com/royenheart/zotero-proxy-gui/main/update.json",
+      "strict_min_version": "6.999",
+      "strict_max_version": "7.0.*"
+    }
+  }
+}
