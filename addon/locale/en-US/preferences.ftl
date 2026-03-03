@@ -1,6 +1,7 @@
 # preferences.ftl — en-US preferences pane strings
 
 proxy-status-none = No proxy (direct connection)
+proxy-status-system = System proxy
 proxy-status-active = Active: { $name } — { $label }
 
 proxy-configs-title = Proxy Configurations
@@ -11,6 +12,7 @@ proxy-btn-edit = Edit
 proxy-btn-delete = Delete
 proxy-btn-activate = Activate
 proxy-btn-disable = Disable Proxy
+proxy-btn-system-proxy = Use System Proxy
 proxy-btn-cancel = Cancel
 proxy-btn-save = Save
 

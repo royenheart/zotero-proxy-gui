@@ -78,6 +78,13 @@ export const ProxyManager = {
     Zotero.log("[zotero-proxy-gui] Proxy disabled");
   },
 
+  /** Use system proxy settings (set type to 5) */
+  useSystemProxy(): void {
+    Zotero.Prefs.set("network.proxy.type", 5, true);
+    ConfigStore.setActiveId("");
+    Zotero.log("[zotero-proxy-gui] Switched to system proxy");
+  },
+
   /**
    * Activate a config by id — applies it to Zotero prefs and records
    * it as the active config in the store.
@@ -102,7 +109,9 @@ export const ProxyManager = {
     const active = liveType !== 0 && config !== null;
 
     let label: string;
-    if (!active || !config) {
+    if (liveType === 5) {
+      label = "System proxy";
+    } else if (!active || !config) {
       label = "No proxy (direct connection)";
     } else if (config.type === "http") {
       label = `HTTP ${config.host}:${config.port}`;
