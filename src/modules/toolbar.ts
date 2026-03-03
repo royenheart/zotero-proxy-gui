@@ -67,7 +67,7 @@ function refreshPopup(
   const disableItem = doc.createXULElement("menuitem");
   disableItem.setAttribute("data-l10n-id", "proxy-menu-disable");
   disableItem.setAttribute("label", "Disable Proxy");
-  if (!activeId && liveType !== 5) {
+  if (!activeId && liveType === 0) {
     disableItem.setAttribute("checked", "true");
     disableItem.setAttribute("type", "radio");
   }
@@ -135,11 +135,9 @@ function updateButtonLabel(doc: Document, rootURI: string): void {
   const liveType = Zotero.Prefs.get("network.proxy.type", true) as number;
   btn.setAttribute(
     "tooltiptext",
-    status.active
+    status.active || liveType === 5
       ? `Proxy: ${status.label}`
-      : liveType === 5
-        ? `Proxy: ${status.label}`
-        : "Proxy: Disabled",
+      : "Proxy: Disabled",
   );
 }
 

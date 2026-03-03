@@ -106,7 +106,7 @@ export const ProxyManager = {
   getStatus(): ProxyStatus {
     const config = ConfigStore.getActive();
     const liveType = Zotero.Prefs.get("network.proxy.type", true) as number;
-    const active = liveType !== 0 && config !== null;
+    const active = (liveType !== 0 && config !== null) || liveType === 5;
 
     let label: string;
     if (liveType === 5) {
