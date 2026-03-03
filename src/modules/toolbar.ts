@@ -61,11 +61,13 @@ function refreshPopup(
   const activeId = ConfigStore.getActiveId();
   const configs = ConfigStore.getAll();
 
+  const liveType = Zotero.Prefs.get("network.proxy.type", true) as number;
+
   // "Disable proxy" item at top
   const disableItem = doc.createXULElement("menuitem");
   disableItem.setAttribute("data-l10n-id", "proxy-menu-disable");
   disableItem.setAttribute("label", "Disable Proxy");
-  if (!activeId) {
+  if (!activeId && liveType !== 5) {
     disableItem.setAttribute("checked", "true");
     disableItem.setAttribute("type", "radio");
   }
@@ -74,6 +76,20 @@ function refreshPopup(
     updateButtonLabel(doc, rootURI);
   });
   popup.appendChild(disableItem);
+
+  // "Use System Proxy" item
+  const systemItem = doc.createXULElement("menuitem");
+  systemItem.setAttribute("data-l10n-id", "proxy-menu-system");
+  systemItem.setAttribute("label", "Use System Proxy");
+  if (!activeId && liveType === 5) {
+    systemItem.setAttribute("checked", "true");
+    systemItem.setAttribute("type", "radio");
+  }
+  systemItem.addEventListener("command", () => {
+    ProxyManager.useSystemProxy();
+    updateButtonLabel(doc, rootURI);
+  });
+  popup.appendChild(systemItem);
 
   if (configs.length > 0) {
     const sep = doc.createXULElement("menuseparator");
@@ -116,9 +132,14 @@ function updateButtonLabel(doc: Document, rootURI: string): void {
   const btn = doc.getElementById(BUTTON_ID);
   if (!btn) return;
   const status = ProxyManager.getStatus();
+  const liveType = Zotero.Prefs.get("network.proxy.type", true) as number;
   btn.setAttribute(
     "tooltiptext",
-    status.active ? `Proxy: ${status.label}` : "Proxy: Disabled",
+    status.active
+      ? `Proxy: ${status.label}`
+      : liveType === 5
+        ? `Proxy: ${status.label}`
+        : "Proxy: Disabled",
   );
 }
 

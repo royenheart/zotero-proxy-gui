@@ -48,11 +48,18 @@ function updateStatus(): void {
 
   dot.classList.toggle("active", status.active);
 
+  const liveType = Zotero.Prefs.get("network.proxy.type", true) as number;
+
   // Use Fluent if available, else fall back to JS label
   label.removeAttribute("data-l10n-id");
-  label.textContent = status.active
-    ? `${status.config?.name ?? ""} — ${status.label}`
-    : status.label;
+  if (liveType === 5) {
+    label.textContent = status.label;
+    dot.classList.add("active");
+  } else {
+    label.textContent = status.active
+      ? `${status.config?.name ?? ""} — ${status.label}`
+      : status.label;
+  }
 }
 
 // ── Config list ────────────────────────────────────────────────────────────
@@ -273,6 +280,11 @@ export const PreferencePane = {
     });
     $("btn-disable").addEventListener("click", () => {
       ProxyManager.deactivate();
+      renderList();
+      updateStatus();
+    });
+    $("btn-system-proxy").addEventListener("click", () => {
+      ProxyManager.useSystemProxy();
       renderList();
       updateStatus();
     });

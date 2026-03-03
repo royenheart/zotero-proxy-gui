@@ -2,4 +2,5 @@
 
 proxy-toolbar-tooltip = 代理管理
 proxy-menu-disable = 禁用代理
+proxy-menu-system = 恢复系统代理
 proxy-menu-open-prefs = 代理设置…

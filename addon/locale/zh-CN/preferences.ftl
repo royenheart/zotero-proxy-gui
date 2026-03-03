@@ -1,6 +1,7 @@
 # preferences.ftl — zh-CN 首选项面板字符串
 
 proxy-status-none = 未使用代理（直连）
+proxy-status-system = 系统代理
 proxy-status-active = 当前代理：{ $name } — { $label }
 
 proxy-configs-title = 代理配置列表
@@ -11,6 +12,7 @@ proxy-btn-edit = 编辑
 proxy-btn-delete = 删除
 proxy-btn-activate = 启用
 proxy-btn-disable = 禁用代理
+proxy-btn-system-proxy = 恢复系统代理
 proxy-btn-cancel = 取消
 proxy-btn-save = 保存
 
