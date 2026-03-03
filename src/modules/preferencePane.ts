@@ -52,13 +52,27 @@ function updateStatus(): void {
 
   // Use Fluent if available, else fall back to JS label
   label.removeAttribute("data-l10n-id");
+  label.removeAttribute("data-l10n-args");
+
+  // System proxy: use Fluent message `proxy-status-system`
   if (liveType === 5) {
-    label.textContent = status.label;
-  } else {
-    label.textContent = status.active
-      ? `${status.config?.name ?? ""} — ${status.label}`
-      : status.label;
+    label.setAttribute("data-l10n-id", "proxy-status-system");
+    return;
   }
+
+  // Active proxy: use Fluent message `proxy-status-active` with args
+  if (status.active) {
+    label.setAttribute("data-l10n-id", "proxy-status-active");
+    const args = {
+      name: status.config?.name ?? "",
+      status: status.label,
+    };
+    label.setAttribute("data-l10n-args", JSON.stringify(args));
+    return;
+  }
+
+  // Inactive or no proxy: fall back to plain label text
+  label.textContent = status.label;
 }
 
 // ── Config list ────────────────────────────────────────────────────────────

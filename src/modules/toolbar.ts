@@ -67,9 +67,9 @@ function refreshPopup(
   const disableItem = doc.createXULElement("menuitem");
   disableItem.setAttribute("data-l10n-id", "proxy-menu-disable");
   disableItem.setAttribute("label", "Disable Proxy");
+  disableItem.setAttribute("type", "radio");
   if (!activeId && liveType === 0) {
     disableItem.setAttribute("checked", "true");
-    disableItem.setAttribute("type", "radio");
   }
   disableItem.addEventListener("command", () => {
     ProxyManager.deactivate();
