@@ -54,7 +54,6 @@ function updateStatus(): void {
   label.removeAttribute("data-l10n-id");
   if (liveType === 5) {
     label.textContent = status.label;
-    dot.classList.add("active");
   } else {
     label.textContent = status.active
       ? `${status.config?.name ?? ""} — ${status.label}`
