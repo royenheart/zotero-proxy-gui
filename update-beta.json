@@ -1,0 +1,48 @@
+{
+  "addons": {
+    "zotero-proxy-gui@royenheart": {
+      "updates": [
+        {
+          "version": "0.1.1",
+          "update_link": "https://github.com/royenheart/zotero-proxy-gui/releases/download/v0.1.1/zotero-proxy-gui-v7.xpi",
+          "applications": {
+            "zotero": {
+              "strict_min_version": "6.999",
+              "strict_max_version": "7.0.*"
+            }
+          }
+        },
+        {
+          "version": "0.1.1",
+          "update_link": "https://github.com/royenheart/zotero-proxy-gui/releases/download/v0.1.1/zotero-proxy-gui-v8.xpi",
+          "applications": {
+            "zotero": {
+              "strict_min_version": "7.999",
+              "strict_max_version": "8.*"
+            }
+          }
+        },
+        {
+          "version": "0.1.2",
+          "update_link": "https://github.com/royenheart/zotero-proxy-gui/releases/download/v0.1.2/zotero-proxy-gui-v7.xpi",
+          "applications": {
+            "zotero": {
+              "strict_min_version": "6.999",
+              "strict_max_version": "7.0.*"
+            }
+          }
+        },
+        {
+          "version": "0.1.2",
+          "update_link": "https://github.com/royenheart/zotero-proxy-gui/releases/download/v0.1.2/zotero-proxy-gui-v8.xpi",
+          "applications": {
+            "zotero": {
+              "strict_min_version": "7.999",
+              "strict_max_version": "8.*"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

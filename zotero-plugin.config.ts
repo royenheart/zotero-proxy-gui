@@ -25,6 +25,11 @@ const dist = `build/${target}`;
 const xpiName = `${pkg.name}-${target}`;
 
 export default defineConfig({
+  release: {
+    bumpp: {
+      execute: "node scripts/generate-update-json.mjs && node scripts/sync-manifest-version.mjs",
+    },
+  },
   source: ["src", "addon"],
   entry: "src/index.ts",
   dist,

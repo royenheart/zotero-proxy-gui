@@ -86,5 +86,3 @@ jobs:
           files: |
             build/v7/zotero-proxy-gui-v7.xpi
             build/v8/zotero-proxy-gui-v8.xpi
-            build/v7/update.json
-            build/v7/update-beta.json
