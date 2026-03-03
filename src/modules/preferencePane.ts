@@ -65,7 +65,7 @@ function updateStatus(): void {
     label.setAttribute("data-l10n-id", "proxy-status-active");
     const args = {
       name: status.config?.name ?? "",
-      status: status.label,
+      label: status.label,
     };
     label.setAttribute("data-l10n-args", JSON.stringify(args));
     return;
