@@ -18,11 +18,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
 
       - name: Install dependencies
@@ -39,6 +41,16 @@ jobs:
 
       - name: Build (v9)
         run: npm run build:v9
+
+      - name: Verify packaged assets
+        run: |
+          for xpi in build/v7/zotero-proxy-gui-v7.xpi build/v8/zotero-proxy-gui-v8.xpi build/v9/zotero-proxy-gui-v9.xpi; do
+            tmp="$(mktemp -d)"
+            unzip -qq "$xpi" content/icons/favicon.png content/icons/favicon@2x.png content/icons/toolbar.svg -d "$tmp"
+            file "$tmp/content/icons/favicon.png" | grep -q "PNG image data"
+            file "$tmp/content/icons/favicon@2x.png" | grep -q "PNG image data"
+            file "$tmp/content/icons/toolbar.svg" | grep -q "SVG"
+          done
 
       - name: Upload build artefacts
         uses: actions/upload-artifact@v4

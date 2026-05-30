@@ -6,6 +6,7 @@
  */
 
 import addon from "./addon";
+import { installBrowserTabShim } from "./modules/browserCompat";
 
 export const hooks = {
   onStartup(
@@ -16,6 +17,8 @@ export const hooks = {
 
     // Wait for Zotero to be fully initialised before doing anything
     Zotero.initializationPromise.then(() => {
+      installBrowserTabShim(Zotero.getMainWindow?.() as Window | null | undefined);
+
       // Register our preference pane.
       // The `scripts` array is evaluated by Zotero inside the pane's window
       // after the document is ready — this is the correct way to init a pane
@@ -54,6 +57,8 @@ export const hooks = {
   },
 
   onMainWindowLoad({ window }: { window: Window }): void {
+    installBrowserTabShim(window);
+
     // Wait for Zotero ready, then inject toolbar button
     Zotero.initializationPromise.then(() => {
       addon.toolbar.inject(window, addon.rootURI);

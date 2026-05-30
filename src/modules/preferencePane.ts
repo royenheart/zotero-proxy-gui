@@ -6,6 +6,7 @@
  */
 
 import { ConfigStore, type ProxyConfig } from "./configStore";
+import { installBrowserTabShim } from "./browserCompat";
 import { ProxyManager } from "./proxyManager";
 
 /** The id of the config currently selected in the list (not necessarily active) */
@@ -275,6 +276,7 @@ export const PreferencePane = {
    */
   init(doc: Document): void {
     _doc = doc;
+    installBrowserTabShim(doc.defaultView);
 
     renderList();
     updateStatus();

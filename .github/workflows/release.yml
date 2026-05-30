@@ -18,12 +18,14 @@ jobs:
       # ── Checkout ──────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       # ── Node.js setup ─────────────────────────────────────────────────────
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
 
       # ── Install dependencies ───────────────────────────────────────────────
@@ -59,6 +61,16 @@ jobs:
       # ── Collect artefacts ──────────────────────────────────────────────────
       - name: List build artefacts
         run: ls -lh build/v7/*.xpi build/v8/*.xpi build/v9/*.xpi
+
+      - name: Verify packaged assets
+        run: |
+          for xpi in build/v7/zotero-proxy-gui-v7.xpi build/v8/zotero-proxy-gui-v8.xpi build/v9/zotero-proxy-gui-v9.xpi; do
+            tmp="$(mktemp -d)"
+            unzip -qq "$xpi" content/icons/favicon.png content/icons/favicon@2x.png content/icons/toolbar.svg -d "$tmp"
+            file "$tmp/content/icons/favicon.png" | grep -q "PNG image data"
+            file "$tmp/content/icons/favicon@2x.png" | grep -q "PNG image data"
+            file "$tmp/content/icons/toolbar.svg" | grep -q "SVG"
+          done
 
       # ── Extract changelog section for this release ─────────────────────────
       - name: Extract release notes
