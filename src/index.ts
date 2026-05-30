@@ -16,7 +16,13 @@ import { hooks } from "./hooks";
 import { PreferencePane } from "./modules/preferencePane";
 
 // Expose to bootstrap.js and preferences.xhtml via the global namespace
-(globalThis as unknown as Record<string, unknown>).zoteroproxygui = {
+const api = {
   hooks,
   preferencePane: PreferencePane,
 };
+
+(globalThis as unknown as Record<string, unknown>).zoteroproxygui = api;
+
+if (typeof window !== "undefined") {
+  (window as unknown as Record<string, unknown>).zoteroproxygui = api;
+}

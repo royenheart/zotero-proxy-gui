@@ -20,16 +20,29 @@
 (function () {
   var initialized = false;
 
+  function getAddon() {
+    return (
+      globalThis.zoteroproxygui ||
+      (typeof window !== "undefined" && window.zoteroproxygui)
+    );
+  }
+
   function initPane() {
     if (!initialized) {
+      var addon = getAddon();
+      if (!addon || !addon.preferencePane) {
+        console.error("[zotero-proxy-gui] Preference pane API is unavailable");
+        return;
+      }
       initialized = true;
-      zoteroproxygui.preferencePane.init(document);
+      addon.preferencePane.init(document);
     }
   }
 
   function onPaneShowing() {
-    if (initialized) {
-      zoteroproxygui.preferencePane.refresh();
+    var addon = getAddon();
+    if (initialized && addon && addon.preferencePane) {
+      addon.preferencePane.refresh();
     }
   }
 

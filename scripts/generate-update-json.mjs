@@ -12,7 +12,8 @@
  *
  * Each call to this script APPENDS a new entry for the current package.json
  * version.  Existing entries for the same version are replaced so the script
- * is idempotent.  Entries for both Zotero 7 (v7) and Zotero 8 (v8) are
+ * is idempotent.  Entries for Zotero 7 (v7), Zotero 8 (v8), and Zotero 9
+ * (v9) are
  * added to every run.
  *
  * Usage:
@@ -56,6 +57,11 @@ const targets = [
     target: "v8",
     strict_min_version: "7.999",
     strict_max_version: "8.*",
+  },
+  {
+    target: "v9",
+    strict_min_version: "8.999",
+    strict_max_version: "9.*",
   },
 ];
 

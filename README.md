@@ -1,6 +1,6 @@
 # Zotero Proxy GUI
 
-Zotero 7/8 插件，提供可视化的代理管理界面。支持多配置预设保存与一键切换。
+Zotero 7/8/9 插件，提供可视化的代理管理界面。支持多配置预设保存与一键切换。
 
 ![GUI](screenshots/gui.png)
 

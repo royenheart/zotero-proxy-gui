@@ -46,16 +46,19 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
-      # ── Build both plugin versions ─────────────────────────────────────────
+      # ── Build plugin versions ──────────────────────────────────────────────
       - name: Build Zotero 7 plugin
         run: npm run build:v7
 
       - name: Build Zotero 8 plugin
         run: npm run build:v8
 
+      - name: Build Zotero 9 plugin
+        run: npm run build:v9
+
       # ── Collect artefacts ──────────────────────────────────────────────────
       - name: List build artefacts
-        run: ls -lh build/v7/*.xpi build/v8/*.xpi
+        run: ls -lh build/v7/*.xpi build/v8/*.xpi build/v9/*.xpi
 
       # ── Extract changelog section for this release ─────────────────────────
       - name: Extract release notes
@@ -86,3 +89,4 @@ jobs:
           files: |
             build/v7/zotero-proxy-gui-v7.xpi
             build/v8/zotero-proxy-gui-v8.xpi
+            build/v9/zotero-proxy-gui-v9.xpi

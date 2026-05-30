@@ -2,7 +2,7 @@
 /**
  * scripts/build-multi.mjs
  *
- * Builds both Zotero 7 and Zotero 8 versions of the plugin.
+ * Builds Zotero 7, Zotero 8, and Zotero 9 versions of the plugin.
  *
  * For each target:
  *   1. Sync version + write addon/manifest.json from the target template
@@ -11,9 +11,10 @@
  *   3. Copy the XPI to build/ for easy access
  *
  * Usage:
- *   node scripts/build-multi.mjs          # build both v7 and v8
+ *   node scripts/build-multi.mjs          # build v7, v8, and v9
  *   node scripts/build-multi.mjs v7       # build only v7
  *   node scripts/build-multi.mjs v8       # build only v8
+ *   node scripts/build-multi.mjs v9       # build only v9
  */
 
 import { execSync } from "child_process";
@@ -24,7 +25,7 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 
-const TARGETS = ["v7", "v8"];
+const TARGETS = ["v7", "v8", "v9"];
 const requested = process.argv[2];
 const targets = requested ? [requested] : TARGETS;
 
@@ -55,7 +56,8 @@ for (const target of targets) {
   // Sync version from package.json into the manifest template
   const manifest = JSON.parse(readFileSync(manifestSrc, "utf8"));
   manifest.version = pkg.version;
-  const versionLabel = target === "v7" ? "Zotero 7" : "Zotero 8";
+  const versionLabel =
+    target === "v7" ? "Zotero 7" : target === "v8" ? "Zotero 8" : "Zotero 9";
   manifest.description = `Visual proxy management for ${versionLabel} with multi-config presets and one-click switching`;
 
   const { strict_min_version, strict_max_version } = manifest.applications.zotero;
@@ -94,7 +96,7 @@ for (const target of targets) {
 const defaultSrc = join(root, "addon", "manifest-v7.json");
 const defaultManifest = JSON.parse(readFileSync(defaultSrc, "utf8"));
 defaultManifest.version = pkg.version;
-defaultManifest.description = "Visual proxy management for Zotero 7/8 with multi-config presets and one-click switching";
+defaultManifest.description = "Visual proxy management for Zotero 7/8/9 with multi-config presets and one-click switching";
 writeFileSync(manifestDst, JSON.stringify(defaultManifest, null, 2) + "\n");
 
 console.log("All builds complete.");

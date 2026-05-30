@@ -9,7 +9,7 @@ import addon from "./addon";
 
 export const hooks = {
   onStartup(
-    { id, version, rootURI }: { id: string; version: string; rootURI: string },
+    { version, rootURI }: { id: string; version: string; rootURI: string },
     _reason: number,
   ): void {
     addon.rootURI = rootURI;
@@ -19,7 +19,7 @@ export const hooks = {
       // Register our preference pane.
       // The `scripts` array is evaluated by Zotero inside the pane's window
       // after the document is ready — this is the correct way to init a pane
-      // in Zotero 7/8 instead of relying on DOMContentLoaded inside the XHTML.
+      // in Zotero 7/8/9 instead of relying on DOMContentLoaded inside the XHTML.
       // The pane src is loaded as a raw HTML fragment (not a full document),
       // so any <script> tags inside preferences.xhtml are ignored by Zotero.
       // The `scripts` array is the correct way to load code for a pane.
@@ -44,7 +44,7 @@ export const hooks = {
   },
 
   onShutdown(
-    { rootURI }: { id: string; version: string; rootURI: string },
+    _data: { id: string; version: string; rootURI: string },
     _reason: number,
   ): void {
     // Remove toolbar buttons from all windows

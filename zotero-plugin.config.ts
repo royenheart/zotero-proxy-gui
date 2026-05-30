@@ -4,18 +4,20 @@ import pkg from "./package.json";
 /**
  * ZOTERO_TARGET controls which Zotero version we build for:
  *   "v7"  →  Firefox 115 baseline, strict_max_version "7.0.*"
- *   "v8"  →  Firefox 128 baseline, strict_max_version "8.*"
+ *   "v8"  →  Firefox 140 baseline, strict_max_version "8.*"
+ *   "v9"  →  Firefox 140 baseline, strict_max_version "9.*"
  *   unset →  defaults to "v7"
  *
  * Each target gets its own dist directory so builds don't overwrite each other:
- *   build/v7/ and build/v8/
+ *   build/v7/, build/v8/, and build/v9/
  */
-const target = (process.env.ZOTERO_TARGET ?? "v7") as "v7" | "v8";
+const target = (process.env.ZOTERO_TARGET ?? "v7") as "v7" | "v8" | "v9";
 
 /** ESBuild JS target per Zotero version (Firefox platform version) */
-const esbuildTarget: Record<"v7" | "v8", string> = {
+const esbuildTarget: Record<"v7" | "v8" | "v9", string> = {
   v7: "firefox115", // Zotero 7 ships Firefox 115
-  v8: "firefox128", // Zotero 8 ships Firefox 128+
+  v8: "firefox140", // Zotero 8 ships Firefox 140
+  v9: "firefox140", // Zotero 9 stays on the Firefox 140 ESR line
 };
 
 /** Each target builds into its own subdirectory */

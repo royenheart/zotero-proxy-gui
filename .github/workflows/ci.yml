@@ -37,6 +37,9 @@ jobs:
       - name: Build (v8)
         run: npm run build:v8
 
+      - name: Build (v9)
+        run: npm run build:v9
+
       - name: Upload build artefacts
         uses: actions/upload-artifact@v4
         with:
@@ -44,4 +47,5 @@ jobs:
           path: |
             build/v7/zotero-proxy-gui-v7.xpi
             build/v8/zotero-proxy-gui-v8.xpi
+            build/v9/zotero-proxy-gui-v9.xpi
           retention-days: 7

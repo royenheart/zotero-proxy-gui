@@ -6,7 +6,7 @@
  * listing all saved configurations for one-click switching.
  */
 
-import { ConfigStore } from "./configStore";
+import { ConfigStore, type ProxyConfig } from "./configStore";
 import { ProxyManager } from "./proxyManager";
 
 const BUTTON_ID = "zotero-proxy-gui-toolbar-button";
@@ -15,6 +15,14 @@ const POPUP_ID = "zotero-proxy-gui-popup";
 /** Track injected elements so we can clean them up on shutdown */
 const _injected: Map<Window, Element[]> = new Map();
 
+function configLabel(cfg: ProxyConfig): string {
+  if (cfg.type === "none") {
+    return `${cfg.name} — No proxy`;
+  }
+  const type = cfg.type === "http" ? "HTTP" : "SOCKS5";
+  return `${cfg.name} — ${type} ${cfg.host}:${cfg.port}`;
+}
+
 // ── Build the toolbar button element ───────────────────────────────────────
 
 function buildButton(doc: Document, rootURI: string): XUL.Element {
@@ -22,14 +30,17 @@ function buildButton(doc: Document, rootURI: string): XUL.Element {
   btn.id = BUTTON_ID;
   btn.setAttribute("type", "menu");
   btn.setAttribute("class", "zotero-tb-button");
+  btn.setAttribute("data-l10n-id", "proxy-toolbar-tooltip");
   btn.setAttribute("tooltiptext", "Proxy GUI");
   btn.setAttribute("image", rootURI + "content/icons/toolbar.svg");
   btn.setAttribute(
     "style",
-    "list-style-image: url('" + rootURI + "content/icons/toolbar.svg');",
+    "-moz-context-properties: fill, stroke; fill: currentColor; stroke: currentColor; list-style-image: url('" +
+      rootURI +
+      "content/icons/toolbar.svg');",
   );
 
-  const popup = buildPopup(doc, rootURI);
+  const popup = buildPopup(doc);
   btn.appendChild(popup);
 
   return btn;
@@ -37,22 +48,18 @@ function buildButton(doc: Document, rootURI: string): XUL.Element {
 
 // ── Build the dropdown popup ───────────────────────────────────────────────
 
-function buildPopup(doc: Document, rootURI: string): XUL.Element {
+function buildPopup(doc: Document): XUL.Element {
   const popup = doc.createXULElement("menupopup");
   popup.id = POPUP_ID;
 
   popup.addEventListener("popupshowing", () => {
-    refreshPopup(doc, popup, rootURI);
+    refreshPopup(doc, popup);
   });
 
   return popup;
 }
 
-function refreshPopup(
-  doc: Document,
-  popup: XUL.Element,
-  rootURI: string,
-): void {
+function refreshPopup(doc: Document, popup: XUL.Element): void {
   // Clear all existing items
   while (popup.firstChild) {
     popup.removeChild(popup.firstChild);
@@ -67,13 +74,14 @@ function refreshPopup(
   const disableItem = doc.createXULElement("menuitem");
   disableItem.setAttribute("data-l10n-id", "proxy-menu-disable");
   disableItem.setAttribute("label", "Disable Proxy");
+  (disableItem as XUL.Element & { label?: string }).label = "Disable Proxy";
   disableItem.setAttribute("type", "radio");
   if (!activeId && liveType === 0) {
     disableItem.setAttribute("checked", "true");
   }
   disableItem.addEventListener("command", () => {
     ProxyManager.deactivate();
-    updateButtonLabel(doc, rootURI);
+    updateButtonLabel(doc);
   });
   popup.appendChild(disableItem);
 
@@ -81,13 +89,14 @@ function refreshPopup(
   const systemItem = doc.createXULElement("menuitem");
   systemItem.setAttribute("data-l10n-id", "proxy-menu-system");
   systemItem.setAttribute("label", "Use System Proxy");
+  (systemItem as XUL.Element & { label?: string }).label = "Use System Proxy";
+  systemItem.setAttribute("type", "radio");
   if (!activeId && liveType === 5) {
     systemItem.setAttribute("checked", "true");
-    systemItem.setAttribute("type", "radio");
   }
   systemItem.addEventListener("command", () => {
     ProxyManager.useSystemProxy();
-    updateButtonLabel(doc, rootURI);
+    updateButtonLabel(doc);
   });
   popup.appendChild(systemItem);
 
@@ -97,17 +106,16 @@ function refreshPopup(
 
     for (const cfg of configs) {
       const item = doc.createXULElement("menuitem");
+      const label = configLabel(cfg);
       item.setAttribute("type", "radio");
-      item.setAttribute(
-        "label",
-        `${cfg.name} — ${cfg.type === "http" ? "HTTP" : "SOCKS5"} ${cfg.host}:${cfg.port}`,
-      );
+      item.setAttribute("label", label);
+      (item as XUL.Element & { label?: string }).label = label;
       if (cfg.id === activeId) {
         item.setAttribute("checked", "true");
       }
       item.addEventListener("command", () => {
         ProxyManager.activate(cfg.id);
-        updateButtonLabel(doc, rootURI);
+        updateButtonLabel(doc);
       });
       popup.appendChild(item);
     }
@@ -120,6 +128,7 @@ function refreshPopup(
   const prefsItem = doc.createXULElement("menuitem");
   prefsItem.setAttribute("data-l10n-id", "proxy-menu-open-prefs");
   prefsItem.setAttribute("label", "Proxy Settings…");
+  (prefsItem as XUL.Element & { label?: string }).label = "Proxy Settings…";
   prefsItem.addEventListener("command", () => {
     const mainWin = Zotero.getMainWindow() as Window;
     (mainWin as Window & { Zotero_Preferences: { openPreferences(id?: string): void } })
@@ -128,7 +137,7 @@ function refreshPopup(
   popup.appendChild(prefsItem);
 }
 
-function updateButtonLabel(doc: Document, rootURI: string): void {
+function updateButtonLabel(doc: Document): void {
   const btn = doc.getElementById(BUTTON_ID);
   if (!btn) return;
   const status = ProxyManager.getStatus();
@@ -151,17 +160,6 @@ export const Toolbar = {
     // Don't inject twice
     if (doc.getElementById(BUTTON_ID)) return;
 
-    const btn = buildButton(doc, rootURI);
-
-    // Append to the nav-bar palette so users can add it via toolbar
-    // customisation.  Also try to place it in the toolbar directly.
-    const palette = doc.getElementById("navigator-toolbox")
-      ?.querySelector("toolbarpalette");
-
-    if (palette) {
-      palette.appendChild(btn.cloneNode(true));
-    }
-
     // Try to insert next to existing Zotero toolbar buttons
     const zoteroToolbar =
       doc.getElementById("zotero-toolbar") ??
@@ -170,10 +168,9 @@ export const Toolbar = {
 
     let inserted: Element | null = null;
     if (zoteroToolbar) {
-      // Clone btn for actual insertion (the palette copy is for drag)
-      const liveBtn = buildButton(doc, rootURI);
-      zoteroToolbar.appendChild(liveBtn);
-      inserted = liveBtn;
+      const btn = buildButton(doc, rootURI);
+      zoteroToolbar.appendChild(btn);
+      inserted = btn;
     }
 
     // Track what we added for cleanup
@@ -181,7 +178,7 @@ export const Toolbar = {
     if (inserted) added.push(inserted);
     _injected.set(win, added);
 
-    updateButtonLabel(doc, rootURI);
+    updateButtonLabel(doc);
   },
 
   /** Called from onMainWindowUnload — remove injected elements */

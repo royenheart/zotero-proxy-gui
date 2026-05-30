@@ -20,6 +20,7 @@ const manifests = [
   "addon/manifest.json",
   "addon/manifest-v7.json",
   "addon/manifest-v8.json",
+  "addon/manifest-v9.json",
 ];
 
 for (const rel of manifests) {

@@ -39,6 +39,16 @@ function typeLabel(type: ProxyConfig["type"]): string {
   return type === "http" ? "HTTP" : type === "socks5" ? "SOCKS5" : "None";
 }
 
+function showDialogError(message: string): void {
+  const errEl = $("dialog-error");
+  errEl.textContent = message;
+  errEl.classList.add("visible");
+}
+
+function isValidPort(port: number): boolean {
+  return Number.isInteger(port) && port >= 1 && port <= 65535;
+}
+
 // ── Status bar ─────────────────────────────────────────────────────────────
 
 function updateStatus(): void {
@@ -208,18 +218,15 @@ function saveDialog(): void {
 
   // Validation
   if (!name) {
-    errEl.textContent = "Name is required.";
-    errEl.classList.add("visible");
+    showDialogError("Name is required.");
     return;
   }
   if (!host) {
-    errEl.textContent = "Host is required.";
-    errEl.classList.add("visible");
+    showDialogError("Host is required.");
     return;
   }
-  if (!portRaw || isNaN(port) || port < 1 || port > 65535) {
-    errEl.textContent = "Port must be a number between 1 and 65535.";
-    errEl.classList.add("visible");
+  if (!portRaw || !isValidPort(port)) {
+    showDialogError("Port must be a number between 1 and 65535.");
     return;
   }
 
@@ -228,8 +235,17 @@ function saveDialog(): void {
   if (type === "http") {
     const sslHost = input("field-ssl-host").value.trim();
     const sslPortRaw = input("field-ssl-port").value.trim();
+    const sslPort = parseInt(sslPortRaw, 10);
+    if (sslPortRaw && !isValidPort(sslPort)) {
+      showDialogError("SSL port must be a number between 1 and 65535.");
+      return;
+    }
+    if (sslPortRaw && !sslHost) {
+      showDialogError("SSL host is required when SSL port is set.");
+      return;
+    }
     if (sslHost) partial.sslHost = sslHost;
-    if (sslPortRaw) partial.sslPort = parseInt(sslPortRaw, 10);
+    if (sslPortRaw) partial.sslPort = sslPort;
   } else if (type === "socks5") {
     partial.remoteDns = input("field-remote-dns").checked;
   }

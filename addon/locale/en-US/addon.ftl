@@ -1,6 +1,10 @@
 # addon.ftl — en-US general strings
 
-proxy-toolbar-tooltip = Proxy GUI
-proxy-menu-disable = Disable Proxy
-proxy-menu-system = Use System Proxy
-proxy-menu-open-prefs = Proxy Settings…
+proxy-toolbar-tooltip =
+    .tooltiptext = Proxy GUI
+proxy-menu-disable =
+    .label = Disable Proxy
+proxy-menu-system =
+    .label = Use System Proxy
+proxy-menu-open-prefs =
+    .label = Proxy Settings…
